@@ -16,4 +16,4 @@ connection.connect(function(err) {
  
 var prompt = require('prompt');
 prompt.start();
-prompt.message = ""
+prompt.message= "";

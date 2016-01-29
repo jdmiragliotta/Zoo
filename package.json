@@ -1,0 +1,24 @@
+{
+  "name": "zoo",
+  "version": "1.0.0",
+  "description": "Created a Zoo app with Node.js and mySQL.",
+  "main": "index.js",
+  "dependencies": {
+    "prompt": "^0.2.14",
+    "mysql": "^2.10.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jdmiragliotta/Zoo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jdmiragliotta/Zoo/issues"
+  },
+  "homepage": "https://github.com/jdmiragliotta/Zoo#readme"
+}
