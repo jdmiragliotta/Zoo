@@ -33,40 +33,44 @@ var zoo = {
   add : function(input_scope){
     var currentScope = input_scope;
     console.log("To add an animal to the zoo please fill out the following form for us!");
-    prompt.get(["name", "type", "age"], function(err, result){
-      connection.query("INSERT INTO animals SET ?"(result.name, result.type, result.age)"), 
+    prompt.get(["animalName", "animalType", "age"], function(err, result){
+      // console.log(result.name);
+      connection.query("INSERT INTO animals (name, type, age) VALUE (?,?,?)", ["Bob", "Bear", 16], function (err, result){
+        if(err) {
+          console.log(err);
+        } 
+        console.log(result)
+      });
       currentScope.menu();
       currentScope.promptUser();
     });
   },
 
-  visit : function(input_scope){
-    var currentScope = input_scope;
+  visit : function(){
     console.log("Enter (I): ------> do you know the animal by it's id? We will visit that animal!" + "\r\n" +
               "Enter (N): ------> do you know the animal by it's name? We will visit that animal!" + "\r\n" +
               "Enter (A): ------> here's the count for all animals in all locations!" + "\r\n" +
               "Enter (C): ------> here's the count for all animals in this one city!" + "\r\n" +
               "Enter (O): ------> here's the count for all the animals in all locations by the type you specified!" + "\r\n" + "\r\n" +
-              "Enter (Q): ------> Quits to the main menu!)"),
-    currentScope.visit();
-    currentScope.view(currentScope);
+              "Enter (Q): ------> Quits to the main menu!)")
   },
 
-  view : function(){
+  view : function(input_scope){
     var currentScope = input_scope;
     console.log("Please choose what you like to visit");
     prompt.get(["visit"], function(err, result){
       if (result.visit ==="Q"){
         currentScope.menu();
+        currentScope.promptUser();
       }else if (result.visit === "O"){
         currentScope.type(input_scope);
-      }else if (result.type === "I"){
+      }else if (result.visit === "I"){
         currentScope.type(input_scope);
-      }else if (result.animID === "N"){
+      }else if (result.visit === "N"){
         currentScope.name(input_scope);
-      }else if (result.name === "A"){
+      }else if (result.visit === "A"){
         currentScope.all(input_scope);
-      }else if (result.all === "c"){
+      }else if (result.visit === "C"){
         currentScope.care(input_scope);
       }else{
         console.log("Sorry didn't get that, come again?");
@@ -80,7 +84,15 @@ var zoo = {
     var currentScope = input_scope;
     console.log("Enter animal type to find how many animals we have of that type.");
     prompt.get(["animal_type"], function(err, result){
-      connection.query("SELECT COUNT(*) FROM animals WHERE result.animal_type");  
+      // console.log(result.animal_type);
+      // var animal_type_input = "SELECT COUNT(type) FROM animals WHERE type=";
+      connection.query("SELECT COUNT(type) FROM animals WHERE type=?", result.animal_type, function(err, result){
+        if (err){
+          console.log('err connection ' +err.stack);
+          return;
+        };
+        console.log(result[0]["COUNT(type)"]);
+      }); 
       currentScope.menu();
       currentScope.promptUser();
     });
@@ -91,7 +103,7 @@ var zoo = {
     var currentScope = input_scope;
     console.log("Enter city name NY/SF");
     prompt.get("city_name", function(err, result){
-      connection.query("SELECT COUNT(*) FROM animals WHERE city_name ='result.city_name'"); // HELP
+      connection.query("SELECT COUNT(*) FROM animals WHERE city_name = " +result.city_name); //ADD CALLBACK FUNCTIONS AND HELP GET NUMBER of ANIMALS FROM ALL CARE TAKERS in enters CITY
       currentScope.visit();
       currentScope.view(currentScope);  
     });
@@ -101,7 +113,7 @@ var zoo = {
     var currentScope = input_scope;
     console.log("Enter ID of the animal you want to visit");
     prompt.get("animal_id", function(err, result){
-      connection.query("SELECT * FROM animals WHERE animal_id = 'result.animal_id'"); 
+      connection.query("SELECT * FROM animals WHERE animal_id = " + result.animal_id); //ADD CALLBACK FUNCTIONS
       currentScope.visit();
       currentScope.view(currentScope);  
     });
@@ -111,7 +123,7 @@ var zoo = {
     var currentScope = input_scope;
     console.log("Enter name of the animal you want to visit");
     prompt.get("animal_name", function(err, result){
-      connection.query("SELECT * FROM animals WHERE animal_name ='result.animal_name'"); // NEED HELP
+      connection.query("SELECT * FROM animals WHERE animal_name = " + result.animal_name); //ADD CALLBACK FUNCTIONS AND NEED HELP
       currentScope.visit();
       currentScope.view(currentScope);  
     });
@@ -119,8 +131,8 @@ var zoo = {
 
   all : function(input_scope){
     var currentScope = input_scope;
-    prompt.get([""], function(err, result){
-      connection.query("SELECT COUNT(*) FROM animals");
+    prompt.get(["O"], function(err, result){
+      connection.query("SELECT COUNT(*) FROM animals"); //ADD CALLBACK FUNCTIONS
       currentScope.menu();
       currentScope.promptUser();
     });
@@ -129,7 +141,7 @@ var zoo = {
   update : function(input_scope){
     var currentScope = input_scope;
       prompt.get(["id","new_name","new_age", "new_type","new_caretaker_id"], function(err, result){
-        connection.query("INSERT INTO animals (id, name, age, type, care_take_id) VALUE (result.id, result.new_name, result.new_type, result.new_caretaker_id)");
+        connection.query("INSERT INTO animals (id, name, age, type, care_take_id) VALUE (result.id, result.new_name, result.new_type, result.new_caretaker_id)"); //ADD CALLBACK FUNCTIONS
         currentScope.menu();
         currentScope.promptUser();
       });
@@ -138,7 +150,7 @@ var zoo = {
   adopt : function(input_scope){
     var currentScope = input_scope;
     prompt.get(["animal_id"], function(err, result){
-      connection.query("DELETE FROM animal WHERE animal_id='result.animal_id'");
+      connection.query("DELETE FROM animal WHERE animal_id="+result.animal_id); //ADD CALLBACK FUNCTIONS
       currentScope.visit();
       currentScope.view(currentScope); 
     })
@@ -153,8 +165,11 @@ var zoo = {
         self.add(self);
       }else if(result.input === "V"){
         self.visit();
+        self.view(self);
       }else if(result.input === "D"){
         self.adopt(self);
+      }else if(result.input === "U"){
+        self.update(self);
       }else{
         console.log("Sorry I didn\'t get that, come again?");
       }
