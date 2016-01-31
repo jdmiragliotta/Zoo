@@ -99,8 +99,11 @@ var zoo = {
   care : function(input_scope){
     var currentScope = input_scope;
     console.log("Enter city name NY/SF");
-    prompt.get("city_name", function(err, result){
-      connection.query("SELECT COUNT(*) FROM animals WHERE city_name = " +result.city_name); //ADD CALLBACK FUNCTIONS AND HELP GET NUMBER of ANIMALS FROM ALL CARE TAKERS in enters CITY
+      prompt.get(["city_name"], function(err, result) {
+        connection.query('SELECT COUNT(*) AS total FROM animals, caretakers WHERE animals.caretaker_id = caretakers.id AND caretakers.city = ?', [result.city_name], function(err, results, fields) {
+        if (err) throw err;
+        console.log("Total animals in " +result.city_name+":" + results[0].total);
+      });
       currentScope.visit();
       currentScope.view(currentScope);  
     });
@@ -129,7 +132,7 @@ var zoo = {
     var currentScope = input_scope;
     console.log("Enter name of the animal you want to visit");
     prompt.get("animal_name", function(err, result){
-      connection.query('SELECT * FROM animals WHERE name = ?', result.animal_name, function(err, results, fields){if (err) throw err;
+      connection.query("SELECT * FROM animals WHERE name = ?", result.animal_name, function(err, results, fields){if (err) throw err;
         else {
           console.log("\r\n" +"Animal Type: " + results[0].type + "\r\n" +
           "Animal ID: " + results[0].id + "\r\n" +
@@ -165,10 +168,13 @@ var zoo = {
   adopt : function(input_scope){
     var currentScope = input_scope;
     prompt.get(["animal_id"], function(err, result){
-      connection.query("DELETE FROM animal WHERE animal_id="+result.animal_id); //ADD CALLBACK FUNCTIONS
+      connection.query("DELETE FROM animals WHERE id=?", result.animal_id ,function(err,results,fields){
+        if (err) throw err; 
+        console.log("Congratulations! Your adoption has been approved. Please take good care of our friend!");
+      });
       currentScope.visit();
       currentScope.view(currentScope); 
-    })
+    });
   },
 
   promptUser : function(){
