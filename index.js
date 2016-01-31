@@ -113,11 +113,11 @@ var zoo = {
       connection.query('SELECT * FROM animals WHERE id = ?', [result.animal_id], function(err, results, fields) {
         if (err) throw err;
         else {
-          console.log("\r\n" +'Animal ID: ' + results[0].id);
-          console.log('Caretaker ID: ' + results[0].caretaker_id);
-          console.log('Name: ' + results[0].name);
-          console.log('Animal Type: ' + results[0].type);
-          console.log('Age: ' + results[0].age);
+          console.log("\r\n" +"Animal ID: " + results[0].id  + "\r\n" +
+                      "Caretaker ID: " + results[0].caretaker_id  + "\r\n" +
+                      "Name: " + results[0].name  + "\r\n" +
+                      "Animal Type: " + results[0].type  + "\r\n" +
+                      "Age: " + results[0].age + "\r\n" + "\r\n");
         }
       });
       currentScope.visit();
@@ -129,7 +129,15 @@ var zoo = {
     var currentScope = input_scope;
     console.log("Enter name of the animal you want to visit");
     prompt.get("animal_name", function(err, result){
-      connection.query("SELECT * FROM animals WHERE animal_name = " + result.animal_name); //ADD CALLBACK FUNCTIONS AND NEED HELP
+      connection.query('SELECT * FROM animals WHERE name = ?', result.animal_name, function(err, results, fields){if (err) throw err;
+        else {
+          console.log("\r\n" +"Animal Type: " + results[0].type + "\r\n" +
+          "Animal ID: " + results[0].id + "\r\n" +
+          "Caretaker ID: " + results[0].caretaker_id + "\r\n" +
+          "Name: " + results[0].name + "\r\n" +
+          "Age: " + results[0].age + "\r\n" + "\r\n");
+        }
+      });
       currentScope.visit();
       currentScope.view(currentScope);  
     });
@@ -137,11 +145,12 @@ var zoo = {
 
   all : function(input_scope){
     var currentScope = input_scope;
-    prompt.get(["O"], function(err, result){
-      connection.query("SELECT COUNT(*) FROM animals"); //ADD CALLBACK FUNCTIONS
-      currentScope.menu();
-      currentScope.promptUser();
-    });
+    connection.query("SELECT COUNT(DISTINCT id) FROM animals", function(err, results, fields){
+      if (err) throw err;
+      console.log("There are "+results[0]["COUNT(DISTINCT id)"]+" animals at the zoo!");
+    }); 
+    currentScope.menu();
+    currentScope.promptUser();
   },
 
   update : function(input_scope){
