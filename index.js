@@ -33,14 +33,13 @@ var zoo = {
   add : function(input_scope){
     var currentScope = input_scope;
     console.log("To add an animal to the zoo please fill out the following form for us!");
-    prompt.get(["animalName", "animalType", "age"], function(err, result){
-      // console.log(result.name);
-      connection.query("INSERT INTO animals (name, type, age) VALUE (?,?,?)", ["Bob", "Bear", 16], function (err, result){
-        if(err) {
-          console.log(err);
-        } 
-        console.log(result)
+    prompt.get([ "->","name", "type", "age"], function(err, result){
+      var randCaretaker = Math.floor(Math.random() * 10) + 1; // Creates a random caretake_id for new animal
+      var new_animal = {caretaker_id: randCaretaker, name: result.name, type: result.type, age: result.age};
+      var query = connection.query("INSERT INTO animals SET ?", new_animal, function (err, result){
+        if(err) {throw err}
       });
+      console.log(query);
       currentScope.menu();
       currentScope.promptUser();
     });
