@@ -158,11 +158,19 @@ var zoo = {
 
   update : function(input_scope){
     var currentScope = input_scope;
-      prompt.get(["id","new_name","new_age", "new_type","new_caretaker_id"], function(err, result){
-        connection.query("INSERT INTO animals (id, name, age, type, care_take_id) VALUE (result.id, result.new_name, result.new_type, result.new_caretaker_id)"); //ADD CALLBACK FUNCTIONS
-        currentScope.menu();
-        currentScope.promptUser();
+    prompt.get(["animal_id","new_name","new_age", "new_type","new_caretaker_id"], function(err, result){
+      var update_animal = {name: result.new_name, age: result.new_age, type: result.new_type, caretaker_id: result.new_caretaker_id};
+      var query = connection.query("UPDATE animals SET ? WHERE id=?", [update_animal, result.animal_id], function(err, results, fields){
+        if(err) throw err;
+        console.log("\r\n"+ "You've updated Animal: "+result.animal_id+" with the following information: "+ "\r\n" +
+                    "Animal Name: " + result.new_name + "\r\n"+
+                    "Animal Age: " + result.new_age + "\r\n"+
+                    "Animal Type: " + result.new_type + "\r\n"+
+                    "Caretaker Id " + result.new_caretaker_id);
       });
+      currentScope.menu();
+      currentScope.promptUser();
+    });
   },
 
   adopt : function(input_scope){
